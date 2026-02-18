@@ -8,21 +8,26 @@ function App() {
   const [period, setPeriod] = useState('AM')
   const [shiftHours, setShiftHours] = useState('8')
   const [shiftMinutes, setShiftMinutes] = useState('30')
+  const [breakHours, setBreakHours] = useState('0')
   const [breakMinutes, setBreakMinutes] = useState('30')
   const [endTime, setEndTime] = useState('')
   const [currentTime, setCurrentTime] = useState(new Date())
   const [totalHours, setTotalHours] = useState('0.00')
+  const [shiftProgress, setShiftProgress] = useState(0)
+  const [timeRemaining, setTimeRemaining] = useState('')
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date())
+      calculateProgress()
     }, 1000)
     return () => clearInterval(timer)
-  }, [])
+  }, [hours, minutes, period, shiftHours, shiftMinutes, breakHours, breakMinutes])
 
   useEffect(() => {
     calculateEndTime()
-  }, [hours, minutes, period, shiftHours, shiftMinutes, breakMinutes])
+    calculateProgress()
+  }, [hours, minutes, period, shiftHours, shiftMinutes, breakHours, breakMinutes])
 
   const calculateEndTime = () => {
     if (!hours || !minutes) return
@@ -34,7 +39,7 @@ function App() {
     const start = new Date()
     start.setHours(hour24, parseInt(minutes), 0, 0)
 
-    const totalMinutes = (parseInt(shiftHours || 0) * 60) + parseInt(shiftMinutes || 0) + parseInt(breakMinutes || 0)
+    const totalMinutes = (parseInt(shiftHours || 0) * 60) + parseInt(shiftMinutes || 0) + (parseInt(breakHours || 0) * 60) + parseInt(breakMinutes || 0)
     const end = new Date(start.getTime() + totalMinutes * 60000)
 
     const endHours = String(end.getHours()).padStart(2, '0')
@@ -45,6 +50,44 @@ function App() {
     const workMinutes = (parseInt(shiftHours || 0) * 60) + parseInt(shiftMinutes || 0)
     const workHours = (workMinutes / 60).toFixed(2)
     setTotalHours(workHours)
+  }
+
+  const calculateProgress = () => {
+    if (!hours || !minutes) {
+      setShiftProgress(0)
+      setTimeRemaining('Not started')
+      return
+    }
+
+    let hour24 = parseInt(hours)
+    if (period === 'PM' && hour24 !== 12) hour24 += 12
+    if (period === 'AM' && hour24 === 12) hour24 = 0
+
+    const start = new Date()
+    start.setHours(hour24, parseInt(minutes), 0, 0)
+
+    const totalMinutes = (parseInt(shiftHours || 0) * 60) + parseInt(shiftMinutes || 0) + (parseInt(breakHours || 0) * 60) + parseInt(breakMinutes || 0)
+    const end = new Date(start.getTime() + totalMinutes * 60000)
+
+    const now = new Date()
+    const totalDuration = end - start
+    const elapsed = now - start
+
+    if (elapsed < 0) {
+      setShiftProgress(0)
+      setTimeRemaining('Not started')
+    } else if (elapsed > totalDuration) {
+      setShiftProgress(100)
+      setTimeRemaining('Completed')
+    } else {
+      const progress = (elapsed / totalDuration) * 100
+      setShiftProgress(progress)
+
+      const remaining = end - now
+      const remainingHours = Math.floor(remaining / (1000 * 60 * 60))
+      const remainingMinutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60))
+      setTimeRemaining(`${remainingHours}h ${remainingMinutes}m left`)
+    }
   }
 
   const handleHourChange = (e) => {
@@ -165,6 +208,28 @@ function App() {
     }
   }
 
+  const handleBreakHoursChange = (e) => {
+    let value = e.target.value.replace(/\D/g, '')
+    if (value === '') {
+      setBreakHours('')
+      return
+    }
+    const numValue = parseInt(value)
+    if (numValue > 24) {
+      setBreakHours('24')
+    } else {
+      setBreakHours(value)
+    }
+  }
+
+  const handleBreakHoursBlur = () => {
+    if (breakHours === '') {
+      setBreakHours('0')
+    } else {
+      setBreakHours(breakHours)
+    }
+  }
+
   return (
     <div className="dashboard">
       <h1>Shift End Calculator</h1>
@@ -186,6 +251,12 @@ function App() {
               <div className="result-card">
                 <h2>Shift Ends At</h2>
                 <div className="end-time">{endTime}</div>
+                <div className="progress-container">
+                  <div className="progress-bar">
+                    <div className="progress-fill" style={{ width: `${shiftProgress}%` }}></div>
+                  </div>
+                  <div className="progress-label">{timeRemaining}</div>
+                </div>
               </div>
 
               <div className="stats-grid">
@@ -195,7 +266,7 @@ function App() {
                 </div>
                 <div className="stat-card">
                   <div className="stat-label">Break</div>
-                  <div className="stat-value">{breakMinutes}m</div>
+                  <div className="stat-value">{breakHours}h {breakMinutes}m</div>
                 </div>
               </div>
             </>
@@ -275,14 +346,25 @@ function App() {
                 <input
                   type="text"
                   min="0"
-                  max="120"
-                  step="15"
+                  max="24"
+                  value={breakHours}
+                  onChange={handleBreakHoursChange}
+                  onBlur={handleBreakHoursBlur}
+                  placeholder="0"
+                />
+                <span>break h</span>
+              </div>
+              <div>
+                <input
+                  type="text"
+                  min="0"
+                  max="59"
                   value={breakMinutes}
                   onChange={handleBreakMinutesChange}
                   onBlur={handleBreakMinutesBlur}
                   placeholder="30"
                 />
-                <span>break</span>
+                <span>break m</span>
               </div>
             </div>
           </div>
