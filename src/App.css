@@ -1,18 +1,27 @@
 .dashboard {
-  max-width: 600px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  animation: fadeInUp 0.8s ease-out;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  animation: dropReveal 1s ease-out;
 }
 
-@keyframes fadeInUp {
-  from {
+@keyframes dropReveal {
+  0% {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(-100px) scale(0.8);
+    filter: blur(10px);
   }
-  to {
+  60% {
+    transform: translateY(10px) scale(1.02);
+  }
+  100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    filter: blur(0);
   }
 }
 
@@ -40,6 +49,132 @@ h1 {
   }
 }
 
+.main-container {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.left-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.current-time-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  animation: dropReveal 1.2s ease-out;
+}
+
+.time-label {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.75rem;
+}
+
+.current-time {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.current-date {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.result-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  text-align: center;
+  animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.result-card h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.end-time {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  letter-spacing: 2px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-3px);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(90deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .calculator-card {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(20px);
@@ -49,6 +184,7 @@ h1 {
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: dropReveal 1.4s ease-out;
 }
 
 .calculator-card:hover {
@@ -58,25 +194,30 @@ h1 {
 
 .input-group {
   margin-bottom: 1.5rem;
-  animation: slideIn 0.6s ease-out backwards;
+  animation: dropReveal 0.8s ease-out backwards;
 }
 
 .input-group:nth-child(1) {
-  animation-delay: 0.1s;
-}
-
-.input-group:nth-child(2) {
   animation-delay: 0.2s;
 }
 
-@keyframes slideIn {
-  from {
+.input-group:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dropReveal {
+  0% {
     opacity: 0;
-    transform: translateX(-20px);
+    transform: translateY(-100px) scale(0.8);
+    filter: blur(10px);
   }
-  to {
+  60% {
+    transform: translateY(10px) scale(1.02);
+  }
+  100% {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0) scale(1);
+    filter: blur(0);
   }
 }
 
@@ -128,6 +269,8 @@ h1 {
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 16px;
   padding: 1rem 1.25rem;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 .duration-inputs > div {
@@ -138,7 +281,7 @@ h1 {
 }
 
 .duration-inputs input {
-  width: 80px;
+  width: 70px;
   -moz-appearance: textfield;
   text-align: center;
   padding: 0.6rem;
@@ -189,16 +332,19 @@ h1 {
 .time-picker {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 16px;
   padding: 1rem 1.25rem;
+  max-width: 350px;
+  margin: 0 auto;
 }
 
 .time-input {
-  width: 70px;
+  width: 60px;
   padding: 0.6rem;
   border: none;
   background: rgba(255, 255, 255, 0.2);
@@ -235,7 +381,7 @@ h1 {
 }
 
 .period-selector button {
-  padding: 0.6rem 1.2rem;
+  padding: 0.6rem 1rem;
   border: none;
   background: transparent;
   color: rgba(255, 255, 255, 0.7);

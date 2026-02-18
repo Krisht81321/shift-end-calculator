@@ -10,6 +10,15 @@ function App() {
   const [shiftMinutes, setShiftMinutes] = useState('30')
   const [breakMinutes, setBreakMinutes] = useState('30')
   const [endTime, setEndTime] = useState('')
+  const [currentTime, setCurrentTime] = useState(new Date())
+  const [totalHours, setTotalHours] = useState('0.00')
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
 
   useEffect(() => {
     calculateEndTime()
@@ -31,6 +40,11 @@ function App() {
     const endHours = String(end.getHours()).padStart(2, '0')
     const endMinutes = String(end.getMinutes()).padStart(2, '0')
     setEndTime(`${endHours}:${endMinutes}`)
+
+    // Calculate total working hours (excluding break)
+    const workMinutes = (parseInt(shiftHours || 0) * 60) + parseInt(shiftMinutes || 0)
+    const workHours = (workMinutes / 60).toFixed(2)
+    setTotalHours(workHours)
   }
 
   const handleHourChange = (e) => {
@@ -155,97 +169,124 @@ function App() {
     <div className="dashboard">
       <h1>Shift End Calculator</h1>
       
-      <div className="calculator-card">
-        <div className="input-group">
-          <label>Shift Start Time</label>
-          <div className="time-picker">
-            <input
-              type="text"
-              className="time-input"
-              value={hours}
-              onChange={handleHourChange}
-              onBlur={handleHourBlur}
-              placeholder="09"
-              maxLength="2"
-            />
-            <span className="time-separator">:</span>
-            <input
-              type="text"
-              className="time-input"
-              value={minutes}
-              onChange={handleMinuteChange}
-              onBlur={handleMinuteBlur}
-              placeholder="00"
-              maxLength="2"
-            />
-            <div className="period-selector">
-              <button
-                type="button"
-                className={period === 'AM' ? 'active' : ''}
-                onClick={() => setPeriod('AM')}
-              >
-                AM
-              </button>
-              <button
-                type="button"
-                className={period === 'PM' ? 'active' : ''}
-                onClick={() => setPeriod('PM')}
-              >
-                PM
-              </button>
+      <div className="main-container">
+        <div className="left-section">
+          <div className="current-time-card">
+            <div className="time-label">Current Time</div>
+            <div className="current-time">
+              {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+            </div>
+            <div className="current-date">
+              {currentTime.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+            </div>
+          </div>
+
+          {endTime && (
+            <>
+              <div className="result-card">
+                <h2>Shift Ends At</h2>
+                <div className="end-time">{endTime}</div>
+              </div>
+
+              <div className="stats-grid">
+                <div className="stat-card">
+                  <div className="stat-label">Work Hours</div>
+                  <div className="stat-value">{totalHours}h</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-label">Break</div>
+                  <div className="stat-value">{breakMinutes}m</div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        <div className="calculator-card">
+          <div className="input-group">
+            <label>Shift Start Time</label>
+            <div className="time-picker">
+              <input
+                type="text"
+                className="time-input"
+                value={hours}
+                onChange={handleHourChange}
+                onBlur={handleHourBlur}
+                placeholder="09"
+                maxLength="2"
+              />
+              <span className="time-separator">:</span>
+              <input
+                type="text"
+                className="time-input"
+                value={minutes}
+                onChange={handleMinuteChange}
+                onBlur={handleMinuteBlur}
+                placeholder="00"
+                maxLength="2"
+              />
+              <div className="period-selector">
+                <button
+                  type="button"
+                  className={period === 'AM' ? 'active' : ''}
+                  onClick={() => setPeriod('AM')}
+                >
+                  AM
+                </button>
+                <button
+                  type="button"
+                  className={period === 'PM' ? 'active' : ''}
+                  onClick={() => setPeriod('PM')}
+                >
+                  PM
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="input-group">
+            <label>Shift Duration</label>
+            <div className="duration-inputs">
+              <div>
+                <input
+                  type="text"
+                  min="0"
+                  max="24"
+                  value={shiftHours}
+                  onChange={handleShiftHoursChange}
+                  onBlur={handleShiftHoursBlur}
+                  placeholder="8"
+                />
+                <span>hours</span>
+              </div>
+              <div>
+                <input
+                  type="text"
+                  min="0"
+                  max="59"
+                  value={shiftMinutes}
+                  onChange={handleShiftMinutesChange}
+                  onBlur={handleShiftMinutesBlur}
+                  placeholder="30"
+                />
+                <span>minutes</span>
+              </div>
+              <div>
+                <input
+                  type="text"
+                  min="0"
+                  max="120"
+                  step="15"
+                  value={breakMinutes}
+                  onChange={handleBreakMinutesChange}
+                  onBlur={handleBreakMinutesBlur}
+                  placeholder="30"
+                />
+                <span>break</span>
+              </div>
             </div>
           </div>
         </div>
-
-        <div className="input-group">
-          <label>Shift Duration</label>
-          <div className="duration-inputs">
-            <div>
-              <input
-                type="text"
-                min="0"
-                max="24"
-                value={shiftHours}
-                onChange={handleShiftHoursChange}
-                onBlur={handleShiftHoursBlur}
-                placeholder="8"
-              />
-              <span>hours</span>
-            </div>
-            <div>
-              <input
-                type="text"
-                min="0"
-                max="59"
-                value={shiftMinutes}
-                onChange={handleShiftMinutesChange}
-                onBlur={handleShiftMinutesBlur}
-                placeholder="30"
-              />
-              <span>minutes</span>
-            </div>
-            <div>
-              <input
-                type="text"
-                min="0"
-                max="120"
-                step="15"
-                value={breakMinutes}
-                onChange={handleBreakMinutesChange}
-                onBlur={handleBreakMinutesBlur}
-                placeholder="30"
-              />
-              <span>break</span>
-            </div>
-          </div>
-        </div>
-
-        {endTime && (
-          <div className="result">
-            <h2>Shift Ends At</h2>
-            <div className="end-time">{endTime}</div>
-          </div>
-        )}
       </div>
     </div>
   )
