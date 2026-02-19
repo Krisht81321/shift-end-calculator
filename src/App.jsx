@@ -9,7 +9,7 @@ function App() {
   const [shiftHours, setShiftHours] = useState('8')
   const [shiftMinutes, setShiftMinutes] = useState('30')
   const [breakHours, setBreakHours] = useState('0')
-  const [breakMinutes, setBreakMinutes] = useState('30')
+  const [breakMinutes, setBreakMinutes] = useState('0')
   const [endTime, setEndTime] = useState('')
   const [currentTime, setCurrentTime] = useState(new Date())
   const [totalHours, setTotalHours] = useState('0.00')
@@ -202,7 +202,7 @@ function App() {
 
   const handleBreakMinutesBlur = () => {
     if (breakMinutes === '') {
-      setBreakMinutes('30')
+      setBreakMinutes('0')
     } else {
       setBreakMinutes(breakMinutes)
     }
