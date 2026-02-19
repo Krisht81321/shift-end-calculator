@@ -15,6 +15,28 @@ function App() {
   const [totalHours, setTotalHours] = useState('0.00')
   const [shiftProgress, setShiftProgress] = useState(0)
   const [timeRemaining, setTimeRemaining] = useState('')
+  const [activeView, setActiveView] = useState('calculator') // 'calculator' or 'logger'
+  const [projects, setProjects] = useState([])
+  const [newProjectName, setNewProjectName] = useState('')
+  const [newProjectDescription, setNewProjectDescription] = useState('')
+
+  const addProject = () => {
+    if (!newProjectName.trim()) return
+    const newProject = {
+      id: Date.now(),
+      name: newProjectName,
+      description: newProjectDescription,
+      createdAt: new Date().toLocaleDateString(),
+      tasks: []
+    }
+    setProjects([newProject, ...projects])
+    setNewProjectName('')
+    setNewProjectDescription('')
+  }
+
+  const deleteProject = (id) => {
+    setProjects(projects.filter(project => project.id !== id))
+  }
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -232,9 +254,33 @@ function App() {
 
   return (
     <div className="dashboard">
-      <h1>Shift End Calculator</h1>
+      <div className="header-section">
+        <h1>{activeView === 'calculator' ? 'Shift End Calculator' : 'Work Logger'}</h1>
+        <div className="view-toggle">
+          <button 
+            className={activeView === 'calculator' ? 'active' : ''}
+            onClick={() => setActiveView('calculator')}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Calculator
+          </button>
+          <button 
+            className={activeView === 'logger' ? 'active' : ''}
+            onClick={() => setActiveView('logger')}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+            </svg>
+            Work Logger
+          </button>
+        </div>
+      </div>
       
-      <div className="main-container">
+      {activeView === 'calculator' ? (
+        <div className="main-container">
         <div className="left-section">
           <div className="current-time-card">
             <div className="time-label">Current Time</div>
@@ -369,7 +415,95 @@ function App() {
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      ) : (
+        <div className="work-logger-view">
+          <div className="logger-container">
+            <div className="add-project-card">
+              <h3>Add New Project</h3>
+              <div className="project-form">
+                <input
+                  type="text"
+                  className="project-input"
+                  placeholder="Project name"
+                  value={newProjectName}
+                  onChange={(e) => setNewProjectName(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && addProject()}
+                />
+                <textarea
+                  className="project-textarea"
+                  placeholder="Project description (optional)"
+                  value={newProjectDescription}
+                  onChange={(e) => setNewProjectDescription(e.target.value)}
+                  rows="2"
+                />
+                <button 
+                  className="add-project-btn"
+                  onClick={addProject}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                  Add Project
+                </button>
+              </div>
+            </div>
+
+            <div className="projects-section">
+              <div className="projects-header">
+                <h3>My Projects</h3>
+                {projects.length > 0 && (
+                  <div className="project-count">
+                    {projects.length} {projects.length === 1 ? 'Project' : 'Projects'}
+                  </div>
+                )}
+              </div>
+
+              {projects.length === 0 ? (
+                <div className="empty-state">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                  </svg>
+                  <p>No projects yet</p>
+                  <span>Create your first project above</span>
+                </div>
+              ) : (
+                <div className="projects-grid">
+                  {projects.map((project) => (
+                    <div key={project.id} className="project-card">
+                      <div className="project-header">
+                        <div className="project-icon">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                          </svg>
+                        </div>
+                        <button 
+                          className="delete-project-btn"
+                          onClick={() => deleteProject(project.id)}
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M18 6L6 18M6 6l12 12"/>
+                          </svg>
+                        </button>
+                      </div>
+                      <div className="project-content">
+                        <h4 className="project-name">{project.name}</h4>
+                        {project.description && (
+                          <p className="project-description">{project.description}</p>
+                        )}
+                        <div className="project-meta">
+                          <span className="project-date">Created {project.createdAt}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
