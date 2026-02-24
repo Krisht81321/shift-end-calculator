@@ -467,6 +467,11 @@
   transition: all 0.3s ease;
 }
 
+.project-list-item:hover .chevron-icon {
+  color: #60a5fa;
+  transform: translateX(3px);
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -617,7 +622,7 @@
 
 .close-btn:hover {
   background: rgba(255, 255, 255, 0.15);
-  transform: scale(1.1);
+  transform: rotate(90deg);
 }
 
 .work-log-form {

@@ -24,11 +24,11 @@ function App() {
     return savedProjects ? JSON.parse(savedProjects) : []
   })
   const [newProjectName, setNewProjectName] = useState('')
+  const [newProjectDescription, setNewProjectDescription] = useState('')
   const [deleteConfirmId, setDeleteConfirmId] = useState(null)
   const [selectedProject, setSelectedProject] = useState(null)
   const [newLogDescription, setNewLogDescription] = useState('')
   const [deleteLogConfirmId, setDeleteLogConfirmId] = useState(null)
-  const [showAllProjectsModal, setShowAllProjectsModal] = useState(false)
 
   // Save projects to localStorage whenever they change
   useEffect(() => {
@@ -45,11 +45,13 @@ function App() {
     const newProject = {
       id: Date.now(),
       name: newProjectName,
+      description: newProjectDescription,
       createdAt: new Date().toLocaleDateString(),
       workLogs: []
     }
     setProjects([newProject, ...projects])
     setNewProjectName('')
+    setNewProjectDescription('')
   }
 
   const confirmDelete = (id) => {
@@ -512,18 +514,7 @@ function App() {
         <div className="work-logger-view">
           <div className="logger-container">
             <div className="add-project-card">
-              <div className="add-project-header">
-                <h3>Add New Project</h3>
-                <button 
-                  className="view-all-projects-btn"
-                  onClick={() => setShowAllProjectsModal(true)}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
-                  </svg>
-                  View All Projects
-                </button>
-              </div>
+              <h3>Add New Project</h3>
               <div className="project-form">
                 <input
                   type="text"
@@ -532,6 +523,13 @@ function App() {
                   value={newProjectName}
                   onChange={(e) => setNewProjectName(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && addProject()}
+                />
+                <textarea
+                  className="project-textarea"
+                  placeholder="Project description (optional)"
+                  value={newProjectDescription}
+                  onChange={(e) => setNewProjectDescription(e.target.value)}
+                  rows="2"
                 />
                 <button 
                   className="add-project-btn"
@@ -545,6 +543,64 @@ function App() {
                 </button>
               </div>
             </div>
+
+            <div className="projects-section">
+              <div className="projects-header">
+                <h3>My Projects</h3>
+                {projects.length > 0 && (
+                  <div className="project-count">
+                    {projects.length} {projects.length === 1 ? 'Project' : 'Projects'}
+                  </div>
+                )}
+              </div>
+
+              {projects.length === 0 ? (
+                <div className="empty-state">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                  </svg>
+                  <p>No projects yet</p>
+                  <span>Create your first project above</span>
+                </div>
+              ) : (
+                <div className="projects-grid">
+                  {projects.map((project) => (
+                    <div key={project.id} className="project-card" onClick={() => openProject(project)}>
+                      <div className="project-header">
+                        <div className="project-icon">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                          </svg>
+                        </div>
+                        <button 
+                          className="delete-project-btn"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            confirmDelete(project.id)
+                          }}
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M18 6L6 18M6 6l12 12"/>
+                          </svg>
+                        </button>
+                      </div>
+                      <div className="project-content">
+                        <h4 className="project-name">{project.name}</h4>
+                        {project.description && (
+                          <p className="project-description">{project.description}</p>
+                        )}
+                        <div className="project-meta">
+                          <span className="project-date">Created {project.createdAt}</span>
+                          {project.workLogs && project.workLogs.length > 0 && (
+                            <span className="project-logs">{project.workLogs.length} logs</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {deleteConfirmId && (
@@ -552,10 +608,9 @@ function App() {
               <div className="confirm-dialog" onClick={(e) => e.stopPropagation()}>
                 <div className="confirm-icon">
                   <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="3 6 5 6 21 6"/>
-                    <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                    <line x1="10" y1="11" x2="10" y2="17"/>
-                    <line x1="14" y1="11" x2="14" y2="17"/>
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
                   </svg>
                 </div>
                 <h3>Delete Project?</h3>
@@ -662,84 +717,6 @@ function App() {
                     </div>
                   </div>
                 )}
-              </div>
-            </div>
-          )}
-
-          {showAllProjectsModal && (
-            <div className="modal-overlay" onClick={() => setShowAllProjectsModal(false)}>
-              <div className="all-projects-modal" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                  <div>
-                    <h2>All Projects</h2>
-                    <p className="modal-description">{projects.length} {projects.length === 1 ? 'project' : 'projects'} total</p>
-                  </div>
-                  <button className="close-btn" onClick={() => setShowAllProjectsModal(false)}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M18 6L6 18M6 6l12 12"/>
-                    </svg>
-                  </button>
-                </div>
-
-                <div className="all-projects-list">
-                  {projects.length === 0 ? (
-                    <div className="empty-logs">
-                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
-                      </svg>
-                      <p>No projects yet</p>
-                      <span>Create your first project</span>
-                    </div>
-                  ) : (
-                    projects.map((project) => (
-                      <div 
-                        key={project.id} 
-                        className="project-list-item"
-                      >
-                        <div 
-                          className="project-list-content"
-                          onClick={() => {
-                            setShowAllProjectsModal(false)
-                            openProject(project)
-                          }}
-                        >
-                          <div className="project-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
-                            </svg>
-                          </div>
-                          <div className="project-list-info">
-                            <h4 className="project-name">{project.name}</h4>
-                            {project.description && (
-                              <p className="project-description">{project.description}</p>
-                            )}
-                            <div className="project-list-meta">
-                              <span className="project-date">Created {project.createdAt}</span>
-                              {project.workLogs && project.workLogs.length > 0 && (
-                                <span className="project-logs">{project.workLogs.length} logs</span>
-                              )}
-                            </div>
-                          </div>
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="chevron-icon">
-                            <polyline points="9 18 15 12 9 6"/>
-                          </svg>
-                        </div>
-                        <button 
-                          className="delete-project-list-btn"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setShowAllProjectsModal(false)
-                            confirmDelete(project.id)
-                          }}
-                        >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M18 6L6 18M6 6l12 12"/>
-                          </svg>
-                        </button>
-                      </div>
-                    ))
-                  )}
-                </div>
               </div>
             </div>
           )}

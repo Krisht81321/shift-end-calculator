@@ -401,52 +401,20 @@
 .project-list-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
+  gap: 1rem;
   padding: 1.25rem;
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .project-list-item:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(96, 165, 250, 0.4);
-}
-
-.project-list-content {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex: 1;
-  cursor: pointer;
-  min-width: 0;
-}
-
-.project-list-content:hover .chevron-icon {
-  color: #60a5fa;
-  transform: translateX(3px);
-}
-
-.delete-project-list-btn {
-  padding: 0.5rem;
-  background: rgba(244, 114, 182, 0.2);
-  border: 1px solid rgba(244, 114, 182, 0.3);
-  border-radius: 8px;
-  color: rgba(244, 114, 182, 0.9);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.delete-project-list-btn:hover {
-  background: rgba(244, 114, 182, 0.3);
-  transform: scale(1.1);
+  transform: translateX(5px);
 }
 
 .project-list-info {
@@ -465,6 +433,11 @@
   color: rgba(255, 255, 255, 0.4);
   flex-shrink: 0;
   transition: all 0.3s ease;
+}
+
+.project-list-item:hover .chevron-icon {
+  color: #60a5fa;
+  transform: translateX(3px);
 }
 
 .modal-overlay {
@@ -617,7 +590,7 @@
 
 .close-btn:hover {
   background: rgba(255, 255, 255, 0.15);
-  transform: scale(1.1);
+  transform: rotate(90deg);
 }
 
 .work-log-form {

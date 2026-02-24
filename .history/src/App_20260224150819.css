@@ -617,7 +617,7 @@
 
 .close-btn:hover {
   background: rgba(255, 255, 255, 0.15);
-  transform: scale(1.1);
+  transform: rotate(90deg);
 }
 
 .work-log-form {
