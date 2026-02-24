@@ -371,7 +371,7 @@ h1 {
   padding: 2rem;
   max-width: 400px;
   text-align: center;
-  animation: fadeInSmooth 0.3s ease-out;
+  animation: scaleIn 0.3s ease-out;
 }
 
 .confirm-icon {
@@ -1109,7 +1109,7 @@ h1 {
   text-align: center;
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  animation: fadeInSmooth 0.5s ease-out;
+  animation: scaleIn 0.5s ease-out;
 }
 
 @keyframes scaleIn {

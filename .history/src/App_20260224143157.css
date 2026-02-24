@@ -123,7 +123,7 @@ h1 {
   padding: 2rem;
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  animation: fadeInSmooth 0.6s ease-out;
+  animation: dropReveal 1s ease-out;
 }
 
 .add-project-card h3 {
@@ -196,7 +196,7 @@ h1 {
   padding: 2rem;
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  animation: fadeInSmooth 0.7s ease-out;
+  animation: dropReveal 1.2s ease-out;
 }
 
 .projects-header {
@@ -371,7 +371,7 @@ h1 {
   padding: 2rem;
   max-width: 400px;
   text-align: center;
-  animation: fadeInSmooth 0.3s ease-out;
+  animation: scaleIn 0.3s ease-out;
 }
 
 .confirm-icon {
@@ -450,7 +450,7 @@ h1 {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  animation: fadeInSmooth 0.3s ease-out;
+  animation: scaleIn 0.3s ease-out;
 }
 
 .modal-header {
@@ -727,7 +727,7 @@ h1 {
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.1);
   text-align: center;
-  animation: fadeInSmooth 0.6s ease-out;
+  animation: dropReveal 1.2s ease-out;
 }
 
 .time-label {
@@ -760,17 +760,17 @@ h1 {
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.15);
   text-align: center;
-  animation: fadeInSmooth 0.5s ease-out;
+  animation: scaleIn 0.5s ease-out;
 }
 
-@keyframes fadeInSmooth {
+@keyframes scaleIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: scale(0.9);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: scale(1);
   }
 }
 
@@ -870,7 +870,7 @@ h1 {
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  animation: fadeInSmooth 0.7s ease-out;
+  animation: dropReveal 1.4s ease-out;
 }
 
 .calculator-card:hover {
@@ -880,15 +880,31 @@ h1 {
 
 .input-group {
   margin-bottom: 1.5rem;
-  animation: fadeInSmooth 0.5s ease-out backwards;
+  animation: dropReveal 0.8s ease-out backwards;
 }
 
 .input-group:nth-child(1) {
-  animation-delay: 0.1s;
+  animation-delay: 0.2s;
 }
 
 .input-group:nth-child(2) {
-  animation-delay: 0.2s;
+  animation-delay: 0.4s;
+}
+
+@keyframes dropReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(-100px) scale(0.8);
+    filter: blur(10px);
+  }
+  60% {
+    transform: translateY(10px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
 }
 
 .input-group {
@@ -1109,7 +1125,7 @@ h1 {
   text-align: center;
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  animation: fadeInSmooth 0.5s ease-out;
+  animation: scaleIn 0.5s ease-out;
 }
 
 @keyframes scaleIn {
