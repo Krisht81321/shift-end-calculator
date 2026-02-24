@@ -451,10 +451,8 @@ h1 {
   padding: 2rem;
   max-width: 700px;
   width: 90%;
-  max-height: 85vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  max-height: 80vh;
+  overflow-y: auto;
   animation: scaleIn 0.3s ease-out;
 }
 
@@ -580,10 +578,6 @@ h1 {
 
 .work-logs-section {
   margin-top: 2rem;
-  flex: 1;
-  overflow-y: auto;
-  padding-right: 0.5rem;
-  min-height: 0;
 }
 
 .logs-section-header {

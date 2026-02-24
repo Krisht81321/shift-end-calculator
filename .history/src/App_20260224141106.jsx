@@ -20,9 +20,6 @@ function App() {
   const [newProjectName, setNewProjectName] = useState('')
   const [newProjectDescription, setNewProjectDescription] = useState('')
   const [deleteConfirmId, setDeleteConfirmId] = useState(null)
-  const [selectedProject, setSelectedProject] = useState(null)
-  const [newLogDescription, setNewLogDescription] = useState('')
-  const [deleteLogConfirmId, setDeleteLogConfirmId] = useState(null)
 
   const addProject = () => {
     if (!newProjectName.trim()) return
@@ -31,7 +28,7 @@ function App() {
       name: newProjectName,
       description: newProjectDescription,
       createdAt: new Date().toLocaleDateString(),
-      workLogs: []
+      tasks: []
     }
     setProjects([newProject, ...projects])
     setNewProjectName('')
@@ -49,72 +46,6 @@ function App() {
 
   const cancelDelete = () => {
     setDeleteConfirmId(null)
-  }
-
-  const openProject = (project) => {
-    setSelectedProject(project)
-  }
-
-  const closeProject = () => {
-    setSelectedProject(null)
-    setNewLogDescription('')
-  }
-
-  const addWorkLog = () => {
-    if (!newLogDescription.trim()) return
-    
-    const updatedProjects = projects.map(project => {
-      if (project.id === selectedProject.id) {
-        const newLog = {
-          id: Date.now(),
-          description: newLogDescription,
-          date: new Date().toLocaleDateString()
-        }
-        return {
-          ...project,
-          workLogs: [newLog, ...project.workLogs]
-        }
-      }
-      return project
-    })
-    
-    setProjects(updatedProjects)
-    setSelectedProject({
-      ...selectedProject,
-      workLogs: [{
-        id: Date.now(),
-        description: newLogDescription,
-        date: new Date().toLocaleDateString()
-      }, ...selectedProject.workLogs]
-    })
-    setNewLogDescription('')
-  }
-
-  const deleteWorkLog = (logId) => {
-    const updatedProjects = projects.map(project => {
-      if (project.id === selectedProject.id) {
-        return {
-          ...project,
-          workLogs: project.workLogs.filter(log => log.id !== deleteLogConfirmId)
-        }
-      }
-      return project
-    })
-    
-    setProjects(updatedProjects)
-    setSelectedProject({
-      ...selectedProject,
-      workLogs: selectedProject.workLogs.filter(log => log.id !== deleteLogConfirmId)
-    })
-    setDeleteLogConfirmId(null)
-  }
-
-  const confirmDeleteLog = (logId) => {
-    setDeleteLogConfirmId(logId)
-  }
-
-  const cancelDeleteLog = () => {
-    setDeleteLogConfirmId(null)
   }
 
   useEffect(() => {
@@ -550,7 +481,7 @@ function App() {
               ) : (
                 <div className="projects-grid">
                   {projects.map((project) => (
-                    <div key={project.id} className="project-card" onClick={() => openProject(project)}>
+                    <div key={project.id} className="project-card">
                       <div className="project-header">
                         <div className="project-icon">
                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -559,10 +490,7 @@ function App() {
                         </div>
                         <button 
                           className="delete-project-btn"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            confirmDelete(project.id)
-                          }}
+                          onClick={() => confirmDelete(project.id)}
                         >
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M18 6L6 18M6 6l12 12"/>
@@ -576,9 +504,6 @@ function App() {
                         )}
                         <div className="project-meta">
                           <span className="project-date">Created {project.createdAt}</span>
-                          {project.workLogs && project.workLogs.length > 0 && (
-                            <span className="project-logs">{project.workLogs.length} logs</span>
-                          )}
                         </div>
                       </div>
                     </div>
@@ -587,124 +512,6 @@ function App() {
               )}
             </div>
           </div>
-
-          {deleteConfirmId && (
-            <div className="modal-overlay" onClick={cancelDelete}>
-              <div className="confirm-dialog" onClick={(e) => e.stopPropagation()}>
-                <div className="confirm-icon">
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="8" x2="12" y2="12"/>
-                    <line x1="12" y1="16" x2="12.01" y2="16"/>
-                  </svg>
-                </div>
-                <h3>Delete Project?</h3>
-                <p>Are you sure you want to delete this project? This action cannot be undone.</p>
-                <div className="confirm-actions">
-                  <button className="cancel-btn" onClick={cancelDelete}>Cancel</button>
-                  <button className="delete-btn-confirm" onClick={deleteProject}>Delete</button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {selectedProject && (
-            <div className="modal-overlay" onClick={closeProject}>
-              <div className="project-detail-modal" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                  <div>
-                    <h2>{selectedProject.name}</h2>
-                    {selectedProject.description && (
-                      <p className="modal-description">{selectedProject.description}</p>
-                    )}
-                  </div>
-                  <button className="close-btn" onClick={closeProject}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M18 6L6 18M6 6l12 12"/>
-                    </svg>
-                  </button>
-                </div>
-
-                <div className="work-log-form">
-                  <h3>Add Work Log</h3>
-                  <div className="log-inputs">
-                    <input
-                      type="text"
-                      className="log-input"
-                      placeholder="What did you work on?"
-                      value={newLogDescription}
-                      onChange={(e) => setNewLogDescription(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && addWorkLog()}
-                    />
-                    <button className="add-log-btn" onClick={addWorkLog}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <line x1="12" y1="5" x2="12" y2="19"/>
-                        <line x1="5" y1="12" x2="19" y2="12"/>
-                      </svg>
-                      Add
-                    </button>
-                  </div>
-                </div>
-
-                <div className="work-logs-section">
-                  <div className="logs-section-header">
-                    <h3>Work Logs</h3>
-                  </div>
-
-                  {!selectedProject.workLogs || selectedProject.workLogs.length === 0 ? (
-                    <div className="empty-logs">
-                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                      </svg>
-                      <p>No work logs yet</p>
-                      <span>Add your first work log above</span>
-                    </div>
-                  ) : (
-                    <div className="work-logs-list">
-                      {selectedProject.workLogs.map((log) => (
-                        <div key={log.id} className="work-log-item">
-                          <div className="log-info">
-                            <div className="log-desc">{log.description}</div>
-                            <div className="log-details">
-                              <span className="log-date">{log.date}</span>
-                            </div>
-                          </div>
-                          <button 
-                            className="delete-log-btn"
-                            onClick={() => confirmDeleteLog(log.id)}
-                          >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M18 6L6 18M6 6l12 12"/>
-                            </svg>
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {deleteLogConfirmId && (
-                  <div className="modal-overlay" onClick={cancelDeleteLog} style={{ zIndex: 1001 }}>
-                    <div className="confirm-dialog" onClick={(e) => e.stopPropagation()}>
-                      <div className="confirm-icon">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <circle cx="12" cy="12" r="10"/>
-                          <line x1="12" y1="8" x2="12" y2="12"/>
-                          <line x1="12" y1="16" x2="12.01" y2="16"/>
-                        </svg>
-                      </div>
-                      <h3>Delete Work Log?</h3>
-                      <p>Are you sure you want to delete this work log? This action cannot be undone.</p>
-                      <div className="confirm-actions">
-                        <button className="cancel-btn" onClick={cancelDeleteLog}>Cancel</button>
-                        <button className="delete-btn-confirm" onClick={deleteWorkLog}>Delete</button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>

@@ -95,7 +95,7 @@ function App() {
       if (project.id === selectedProject.id) {
         return {
           ...project,
-          workLogs: project.workLogs.filter(log => log.id !== deleteLogConfirmId)
+          workLogs: project.workLogs.filter(log => log.id !== logId)
         }
       }
       return project
@@ -104,17 +104,8 @@ function App() {
     setProjects(updatedProjects)
     setSelectedProject({
       ...selectedProject,
-      workLogs: selectedProject.workLogs.filter(log => log.id !== deleteLogConfirmId)
+      workLogs: selectedProject.workLogs.filter(log => log.id !== logId)
     })
-    setDeleteLogConfirmId(null)
-  }
-
-  const confirmDeleteLog = (logId) => {
-    setDeleteLogConfirmId(logId)
-  }
-
-  const cancelDeleteLog = () => {
-    setDeleteLogConfirmId(null)
   }
 
   useEffect(() => {
@@ -671,7 +662,7 @@ function App() {
                           </div>
                           <button 
                             className="delete-log-btn"
-                            onClick={() => confirmDeleteLog(log.id)}
+                            onClick={() => deleteWorkLog(log.id)}
                           >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <path d="M18 6L6 18M6 6l12 12"/>
@@ -682,26 +673,6 @@ function App() {
                     </div>
                   )}
                 </div>
-
-                {deleteLogConfirmId && (
-                  <div className="modal-overlay" onClick={cancelDeleteLog} style={{ zIndex: 1001 }}>
-                    <div className="confirm-dialog" onClick={(e) => e.stopPropagation()}>
-                      <div className="confirm-icon">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <circle cx="12" cy="12" r="10"/>
-                          <line x1="12" y1="8" x2="12" y2="12"/>
-                          <line x1="12" y1="16" x2="12.01" y2="16"/>
-                        </svg>
-                      </div>
-                      <h3>Delete Work Log?</h3>
-                      <p>Are you sure you want to delete this work log? This action cannot be undone.</p>
-                      <div className="confirm-actions">
-                        <button className="cancel-btn" onClick={cancelDeleteLog}>Cancel</button>
-                        <button className="delete-btn-confirm" onClick={deleteWorkLog}>Delete</button>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           )}
