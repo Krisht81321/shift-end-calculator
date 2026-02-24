@@ -32,9 +32,6 @@ function App() {
   const [toast, setToast] = useState({ show: false, message: '', type: '' })
   const [editingProjectId, setEditingProjectId] = useState(null)
   const [editingProjectName, setEditingProjectName] = useState('')
-  const [editingLogId, setEditingLogId] = useState(null)
-  const [editingLogDescription, setEditingLogDescription] = useState('')
-  const [searchQuery, setSearchQuery] = useState('')
 
   // Save projects to localStorage whenever they change
   useEffect(() => {
@@ -88,48 +85,6 @@ function App() {
     setEditingProjectId(null)
     setEditingProjectName('')
     showToast('Project renamed successfully!', 'success')
-  }
-
-  const startEditingLog = (log) => {
-    setEditingLogId(log.id)
-    setEditingLogDescription(log.description)
-  }
-
-  const cancelEditingLog = () => {
-    setEditingLogId(null)
-    setEditingLogDescription('')
-  }
-
-  const saveLogDescription = () => {
-    if (!editingLogDescription.trim()) return
-    
-    const updatedProjects = projects.map(project => {
-      if (project.id === selectedProject.id) {
-        return {
-          ...project,
-          workLogs: project.workLogs.map(log =>
-            log.id === editingLogId
-              ? { ...log, description: editingLogDescription }
-              : log
-          )
-        }
-      }
-      return project
-    })
-    
-    setProjects(updatedProjects)
-    setSelectedProject({
-      ...selectedProject,
-      workLogs: selectedProject.workLogs.map(log =>
-        log.id === editingLogId
-          ? { ...log, description: editingLogDescription }
-          : log
-      )
-    })
-    
-    setEditingLogId(null)
-    setEditingLogDescription('')
-    showToast('Work log updated successfully!', 'success')
   }
 
   const addProject = () => {
@@ -764,59 +719,20 @@ function App() {
                     <div className="work-logs-list">
                       {selectedProject.workLogs.map((log) => (
                         <div key={log.id} className="work-log-item">
-                          {editingLogId === log.id ? (
-                            <div className="edit-log-container">
-                              <input
-                                type="text"
-                                className="edit-log-input"
-                                value={editingLogDescription}
-                                onChange={(e) => setEditingLogDescription(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && saveLogDescription()}
-                                autoFocus
-                              />
-                              <div className="edit-actions">
-                                <button className="save-edit-btn" onClick={saveLogDescription}>
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <polyline points="20 6 9 17 4 12"/>
-                                  </svg>
-                                </button>
-                                <button className="cancel-edit-btn" onClick={cancelEditingLog}>
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <line x1="18" y1="6" x2="6" y2="18"/>
-                                    <line x1="6" y1="6" x2="18" y2="18"/>
-                                  </svg>
-                                </button>
-                              </div>
+                          <div className="log-info">
+                            <div className="log-desc">{log.description}</div>
+                            <div className="log-details">
+                              <span className="log-date">{log.date}</span>
                             </div>
-                          ) : (
-                            <>
-                              <div className="log-info">
-                                <div className="log-desc">{log.description}</div>
-                                <div className="log-details">
-                                  <span className="log-date">{log.date}</span>
-                                </div>
-                              </div>
-                              <div className="log-actions">
-                                <button 
-                                  className="edit-log-btn"
-                                  onClick={() => startEditingLog(log)}
-                                >
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                  </svg>
-                                </button>
-                                <button 
-                                  className="delete-log-btn"
-                                  onClick={() => confirmDeleteLog(log.id)}
-                                >
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M18 6L6 18M6 6l12 12"/>
-                                  </svg>
-                                </button>
-                              </div>
-                            </>
-                          )}
+                          </div>
+                          <button 
+                            className="delete-log-btn"
+                            onClick={() => confirmDeleteLog(log.id)}
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M18 6L6 18M6 6l12 12"/>
+                            </svg>
+                          </button>
                         </div>
                       ))}
                     </div>
@@ -861,149 +777,64 @@ function App() {
                   </button>
                 </div>
 
-                <div className="search-container">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="search-icon">
-                    <circle cx="11" cy="11" r="8"/>
-                    <path d="M21 21l-4.35-4.35"/>
-                  </svg>
-                  <input
-                    type="text"
-                    className="search-input"
-                    placeholder="Search projects..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                  {searchQuery && (
-                    <button className="clear-search-btn" onClick={() => setSearchQuery('')}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
-                      </svg>
-                    </button>
-                  )}
-                </div>
-
                 <div className="all-projects-list">
-                  {(() => {
-                    const filteredProjects = projects.filter(project =>
-                      project.name.toLowerCase().includes(searchQuery.toLowerCase())
-                    )
-                    
-                    if (projects.length === 0) {
-                      return (
-                        <div className="empty-logs">
-                          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
-                          </svg>
-                          <p>No projects yet</p>
-                          <span>Create your first project</span>
-                        </div>
-                      )
-                    }
-                    
-                    if (filteredProjects.length === 0) {
-                      return (
-                        <div className="empty-logs">
-                          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <circle cx="11" cy="11" r="8"/>
-                            <path d="M21 21l-4.35-4.35"/>
-                          </svg>
-                          <p>No projects found</p>
-                          <span>Try a different search term</span>
-                        </div>
-                      )
-                    }
-                    
-                    return filteredProjects.map((project) => (
+                  {projects.length === 0 ? (
+                    <div className="empty-logs">
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                      </svg>
+                      <p>No projects yet</p>
+                      <span>Create your first project</span>
+                    </div>
+                  ) : (
+                    projects.map((project) => (
                       <div 
                         key={project.id} 
                         className="project-list-item"
                       >
-                        {editingProjectId === project.id ? (
-                          <div className="edit-project-list-item">
-                            <input
-                              type="text"
-                              className="edit-project-input"
-                              value={editingProjectName}
-                              onChange={(e) => setEditingProjectName(e.target.value)}
-                              onKeyPress={(e) => e.key === 'Enter' && saveProjectName()}
-                              autoFocus
-                            />
-                            <div className="edit-actions">
-                              <button className="save-edit-btn" onClick={saveProjectName}>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <polyline points="20 6 9 17 4 12"/>
-                                </svg>
-                              </button>
-                              <button className="cancel-edit-btn" onClick={cancelEditingProject}>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <line x1="18" y1="6" x2="6" y2="18"/>
-                                  <line x1="6" y1="6" x2="18" y2="18"/>
-                                </svg>
-                              </button>
+                        <div 
+                          className="project-list-content"
+                          onClick={() => {
+                            setShowAllProjectsModal(false)
+                            openProject(project)
+                          }}
+                        >
+                          <div className="project-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                            </svg>
+                          </div>
+                          <div className="project-list-info">
+                            <h4 className="project-name">{project.name}</h4>
+                            {project.description && (
+                              <p className="project-description">{project.description}</p>
+                            )}
+                            <div className="project-list-meta">
+                              <span className="project-date">Created {project.createdAt}</span>
+                              {project.workLogs && project.workLogs.length > 0 && (
+                                <span className="project-logs">{project.workLogs.length} logs</span>
+                              )}
                             </div>
                           </div>
-                        ) : (
-                          <>
-                            <div 
-                              className="project-list-content"
-                              onClick={() => {
-                                setShowAllProjectsModal(false)
-                                openProject(project)
-                              }}
-                            >
-                              <div className="project-icon">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
-                                </svg>
-                              </div>
-                              <div className="project-list-info">
-                                <h4 className="project-name">{project.name}</h4>
-                                {project.description && (
-                                  <p className="project-description">{project.description}</p>
-                                )}
-                                <div className="project-list-meta">
-                                  <span className="project-date">Created {project.createdAt}</span>
-                                  {project.workLogs && project.workLogs.length > 0 && (
-                                    <span className="project-logs">{project.workLogs.length} logs</span>
-                                  )}
-                                </div>
-                              </div>
-                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="chevron-icon">
-                                <polyline points="9 18 15 12 9 6"/>
-                              </svg>
-                            </div>
-                            <div className="project-list-actions">
-                              <button 
-                                className="edit-project-list-btn"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  startEditingProject(project)
-                                }}
-                              >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                </svg>
-                              </button>
-                              <button 
-                                className="delete-project-list-btn"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  setShowAllProjectsModal(false)
-                                  confirmDelete(project.id)
-                                }}
-                              >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M18 6L6 18M6 6l12 12"/>
-                                </svg>
-                              </button>
-                            </div>
-                          </>
-                        )}
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="chevron-icon">
+                            <polyline points="9 18 15 12 9 6"/>
+                          </svg>
+                        </div>
+                        <button 
+                          className="delete-project-list-btn"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setShowAllProjectsModal(false)
+                            confirmDelete(project.id)
+                          }}
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M18 6L6 18M6 6l12 12"/>
+                          </svg>
+                        </button>
                       </div>
                     ))
-                  })()}
+                  )}
                 </div>
               </div>
             </div>

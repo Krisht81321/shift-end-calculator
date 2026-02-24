@@ -34,7 +34,6 @@ function App() {
   const [editingProjectName, setEditingProjectName] = useState('')
   const [editingLogId, setEditingLogId] = useState(null)
   const [editingLogDescription, setEditingLogDescription] = useState('')
-  const [searchQuery, setSearchQuery] = useState('')
 
   // Save projects to localStorage whenever they change
   useEffect(() => {
@@ -861,60 +860,17 @@ function App() {
                   </button>
                 </div>
 
-                <div className="search-container">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="search-icon">
-                    <circle cx="11" cy="11" r="8"/>
-                    <path d="M21 21l-4.35-4.35"/>
-                  </svg>
-                  <input
-                    type="text"
-                    className="search-input"
-                    placeholder="Search projects..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                  {searchQuery && (
-                    <button className="clear-search-btn" onClick={() => setSearchQuery('')}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
-                      </svg>
-                    </button>
-                  )}
-                </div>
-
                 <div className="all-projects-list">
-                  {(() => {
-                    const filteredProjects = projects.filter(project =>
-                      project.name.toLowerCase().includes(searchQuery.toLowerCase())
-                    )
-                    
-                    if (projects.length === 0) {
-                      return (
-                        <div className="empty-logs">
-                          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
-                          </svg>
-                          <p>No projects yet</p>
-                          <span>Create your first project</span>
-                        </div>
-                      )
-                    }
-                    
-                    if (filteredProjects.length === 0) {
-                      return (
-                        <div className="empty-logs">
-                          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <circle cx="11" cy="11" r="8"/>
-                            <path d="M21 21l-4.35-4.35"/>
-                          </svg>
-                          <p>No projects found</p>
-                          <span>Try a different search term</span>
-                        </div>
-                      )
-                    }
-                    
-                    return filteredProjects.map((project) => (
+                  {projects.length === 0 ? (
+                    <div className="empty-logs">
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                      </svg>
+                      <p>No projects yet</p>
+                      <span>Create your first project</span>
+                    </div>
+                  ) : (
+                    projects.map((project) => (
                       <div 
                         key={project.id} 
                         className="project-list-item"
@@ -1003,7 +959,7 @@ function App() {
                         )}
                       </div>
                     ))
-                  })()}
+                  )}
                 </div>
               </div>
             </div>
