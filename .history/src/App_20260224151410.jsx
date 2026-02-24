@@ -41,20 +41,6 @@ function App() {
     localStorage.setItem('activeView', activeView)
   }, [activeView])
 
-  // Toast notification auto-hide
-  useEffect(() => {
-    if (toast.show) {
-      const timer = setTimeout(() => {
-        setToast({ show: false, message: '', type: '' })
-      }, 3000)
-      return () => clearTimeout(timer)
-    }
-  }, [toast.show])
-
-  const showToast = (message, type = 'success') => {
-    setToast({ show: true, message, type })
-  }
-
   const addProject = () => {
     if (!newProjectName.trim()) return
     const newProject = {
@@ -65,7 +51,6 @@ function App() {
     }
     setProjects([newProject, ...projects])
     setNewProjectName('')
-    showToast('Project created successfully!', 'success')
   }
 
   const confirmDelete = (id) => {
@@ -75,7 +60,6 @@ function App() {
   const deleteProject = () => {
     setProjects(projects.filter(project => project.id !== deleteConfirmId))
     setDeleteConfirmId(null)
-    showToast('Project deleted successfully!', 'success')
   }
 
   const cancelDelete = () => {
@@ -364,16 +348,6 @@ function App() {
 
   return (
     <div className="dashboard">
-      {toast.show && (
-        <div className={`toast toast-${toast.type}`}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-            <polyline points="22 4 12 14.01 9 11.01"/>
-          </svg>
-          <span>{toast.message}</span>
-        </div>
-      )}
-      
       <nav className="navbar">
         <div className="navbar-menu">
           <button 
